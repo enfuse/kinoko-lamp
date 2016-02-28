@@ -5,23 +5,19 @@
 #define STEPS_DELAY 80
 
 #define LEDS_PIN 0
-#define BTN_PIN 1
+#define PR_PIN 1
 
 WS2812 LED(5); // 5 LEDs
 uint16_t init_hue[5]; 
 uint16_t end_hue[5];
 uint8_t rgb_converted[3];
-uint16_t btn_timer = 0;
+
 uint8_t saturation = 255;
 uint8_t brightness = 200;
-int8_t adding = 1;
-uint8_t buttonState = 0; 
-cRGB value;
-cRGB black;
 
-void setup() {
-  pinMode(BTN_PIN, INPUT);
-  
+cRGB value;
+
+void setup() {    
 	LED.setOutput(LEDS_PIN);
   for(int i=0;i<5;i++){
     init_hue[i] = random(MIN_HUE,MAX_HUE);
@@ -31,21 +27,7 @@ void setup() {
 
 void loop() {
   digitalWrite(2, HIGH);
-  buttonState = digitalRead(BTN_PIN);
-  if (buttonState == HIGH) {
-    btn_timer++;
-    if(btn_timer > 200){
-      if(saturation == 255){
-        adding = -1;
-      }else if(saturation == 0){
-        adding = 1;
-      }
-      saturation = saturation + adding;
-    }
-  }else{
-    btn_timer = 0;
-  }
-  
+  brightness = analogRead(PR_PIN);
   for(int i=0;i<5;i++){
     if(init_hue[i] < end_hue[i]){
       init_hue[i] = init_hue[i] + 1;
@@ -66,9 +48,7 @@ void loop() {
     LED.set_crgb_at(i, value);    
   }
   LED.sync(); // Sends the value to the LED
-  delay(STEPS_DELAY); 
-  
-  
+  delay(STEPS_DELAY);  
 }
 
 /******************************************************************************
